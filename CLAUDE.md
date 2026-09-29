@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **Nome:** este projeto agora se chama **painelcargaaio** (antes `painel_aio`/repo `painelaio`). O nome "Painel AIO" (`painelAIO`) passou a ser o painel novo de cadastro ao vivo, na pasta irmã `painelAIO`.
+
 ## What this project does
 
 Pipeline that ingests AIO (Autorização de Início de Execução) emails from Gmail (GEPAC07 system) into PostgreSQL, then generates a **self-contained static HTML panel** (an 11-step tramitação timeline, Portaria Conjunta 32/2024) served on GitHub Pages. The emails are forwarded from the GEPAC07 system to a Gmail account (`cgpac.mcid@gmail.com`); the pipeline reads the forwarded body to extract structured fields. Stage dates that don't come by email are filled from the CGPAC spreadsheet ("Informações AIO") and from the TransfereGov DB module.
@@ -48,7 +50,7 @@ Gmail (GEPAC07 emails) ─→ aio_pipeline.py ──────────┐
 CGPAC spreadsheet ──────→ atualizar_planilha.py ─────┼→ PostgreSQL (se_cgpac.aio_solicitacoes)
 TransfereGov module ───→ importar_emissao_transferegov.py ┘        │
                                           painel/gerar_painel.py ←──┘ → docs/index.html
-                                                                      → GitHub Pages (repo painelaio)
+                                                                      → GitHub Pages (repo painelcargaaio)
 ```
 The panel **embeds its data** (read from the DB at generation time) — there is no CSV and no runtime fetch.
 
@@ -67,7 +69,7 @@ The panel **embeds its data** (read from the DB at generation time) — there is
 
 ### Deployment
 - `docs/` — what GitHub Pages serves (`.nojekyll` + `index.html` + `favicon.png`). `docs/index.html` is the generated panel and **is committed/public**.
-- Repo is **`painelaio`** (`github.com/brunothiago/painelaio`). Live URLs: `https://brunothiago.github.io/painelaio/` and the account custom domain `http://thiagobruno.com.br/painelaio/` (same Pages site).
+- Repo is **`painelcargaaio`** (`github.com/brunothiago/painelcargaaio`). Live URLs: `https://brunothiago.github.io/painelcargaaio/` and the account custom domain `http://thiagobruno.com.br/painelcargaaio/` (same Pages site).
 
 ## Key conventions
 

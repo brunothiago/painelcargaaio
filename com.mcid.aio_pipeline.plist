@@ -9,11 +9,11 @@
     <key>ProgramArguments</key>
     <array>
         <string>/opt/homebrew/bin/python3</string>
-        <string>/Users/thiagobruno/Desktop/GrandLine/NamiDash/painel_aio/aio_pipeline.py</string>
+        <string>/Users/thiagobruno/Desktop/05_GrandLine/NamiDash/painelcargaaio/aio_pipeline.py</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/thiagobruno/Desktop/GrandLine/NamiDash/painel_aio</string>
+    <string>/Users/thiagobruno/Desktop/05_GrandLine/NamiDash/painelcargaaio</string>
 
     <key>StartCalendarInterval</key>
     <dict>

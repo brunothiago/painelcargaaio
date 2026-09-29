@@ -26,7 +26,7 @@ Caixa (GEPAC07)
     → encaminha → cgpac.mcid@gmail.com
     → aio_pipeline.py → banco PostgreSQL
     → painel/gerar_painel.py → docs/index.html
-    → GitHub Pages (painelaio)
+    → GitHub Pages (painelcargaaio)
 ```
 
 ---
@@ -108,7 +108,7 @@ Campos que não existirem em algum email ficam **vazios** no banco.
 No Terminal (Mac), na pasta do projeto:
 
 ```bash
-cd painel_aio
+cd painelcargaaio
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -154,7 +154,7 @@ Fazer login com `cgpac.mcid@gmail.com`. O script preenche o `config.env` sozinho
 Abra o Terminal, entre na pasta e ative o ambiente:
 
 ```bash
-cd painel_aio
+cd painelcargaaio
 source .venv/bin/activate
 ```
 
@@ -203,7 +203,7 @@ open docs/index.html
 
 ### Publicar o painel no GitHub
 
-1. Repositório **painelaio** no GitHub (Pages: branch `main`, pasta `/docs`).
+1. Repositório **painelcargaaio** no GitHub (Pages: branch `main`, pasta `/docs`).
 2. Rode `./rodar_fluxo_completo.sh 30` na sua máquina (com VPN, se a TI exigir).
 3. Antes do `git push`, confira que **nunca** entram `config.env` nem `credentials.json`.
 4. Publique com `./publicar_painel_manual.sh` (gera `docs/index.html`, faz commit e push).
@@ -265,4 +265,4 @@ técnico ou peça à TI.
 ## Resumo em uma frase
 
 > O sistema lê emails GEPAC07, grava no banco e gera o **painel de linha do tempo**
-> (`painelaio`) publicado no GitHub Pages.
+> (`painelcargaaio`) publicado no GitHub Pages.
