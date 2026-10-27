@@ -26,7 +26,7 @@ import logging
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -63,6 +63,8 @@ log = logging.getLogger("aio_pipeline")
 # Escopos e regex usados no pipeline
 GMAIL_SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 GMAIL_TOKEN_URI = "https://oauth2.googleapis.com/token"
+# Cota do Gmail por minuto: a biblioteca espera e tenta de novo (429/403 rateLimitExceeded)
+GMAIL_RETRIES = 8
 _AIO_BODY_RE = re.compile(r"instrumento", re.I)
 _TC_RE = re.compile(r"\bTC\s*:", re.I)
 _GEPAC_RE = re.compile(r"GEPAC07|GEPAC\s*07|CAIXA\.GOV\.BR", re.I)
@@ -200,6 +202,23 @@ def _gepac_body_window(body: str) -> str:
 
 
 def _parse_data_corpo_email(texto: str) -> datetime | None:
+    """
+    Interpreta datas no corpo do encaminhamento e devolve no horário de Brasília.
+    Se a linha traz o fuso do Outlook, ex. "(UTC+00:00) Monrovia, Reykjavik",
+    o horário é lido nesse fuso e convertido; sem fuso, assume Brasília.
+    """
+    dt = _parse_data_sem_fuso(texto)
+    if dt is None:
+        return None
+    m = re.search(r"\((?:UTC|GMT)\s*([+-])(\d{1,2}):?(\d{2})\)", texto, re.I)
+    if m:
+        delta = timedelta(hours=int(m.group(2)), minutes=int(m.group(3)))
+        fuso = timezone(delta if m.group(1) == "+" else -delta)
+        dt = dt.replace(tzinfo=fuso).astimezone(_TZ_BR)
+    return dt
+
+
+def _parse_data_sem_fuso(texto: str) -> datetime | None:
     """
     Interpreta datas no corpo do encaminhamento (português).
     Ex.: sexta-feira, 22 de maio de 2026 às 16:45
@@ -439,7 +458,7 @@ def list_gmail_messages(service, query: str) -> list[dict]:
         kwargs = {"userId": "me", "q": query, "maxResults": 100}
         if page_token:
             kwargs["pageToken"] = page_token
-        result = service.users().messages().list(**kwargs).execute()
+        result = service.users().messages().list(**kwargs).execute(num_retries=GMAIL_RETRIES)
         messages.extend(result.get("messages", []))
         page_token = result.get("nextPageToken")
         if not page_token:
@@ -494,7 +513,7 @@ def run_pipeline(dias: int = 2, dry_run: bool = False, atualizar: bool = False):
     for msg_ref in messages:
         msg_id = msg_ref["id"]
         try:
-            msg = service.users().messages().get(userId="me", id=msg_id, format="full").execute()
+            msg = service.users().messages().get(userId="me", id=msg_id, format="full").execute(num_retries=GMAIL_RETRIES)
             body = get_email_body(msg)
 
             if not _AIO_BODY_RE.search(body) or not _TC_RE.search(body):
